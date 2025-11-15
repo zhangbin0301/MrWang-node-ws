@@ -18,7 +18,6 @@ const WSPATH = process.env.WSPATH || UUID.slice(0, 8);     // 节点路径，默
 const SUB_PATH = process.env.SUB_PATH || 'sub';            // 获取节点的订阅路径
 const NAME = process.env.NAME || '';                       // 节点名称
 const PORT = process.env.PORT || 3000;                     // http和ws服务端口
-const { execSync } = require('child_process');
 
 let ISP = '';
 const GetISP = async () => {
