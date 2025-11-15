@@ -18,13 +18,15 @@ const WSPATH = process.env.WSPATH || UUID.slice(0, 8);     // 节点路径，默
 const SUB_PATH = process.env.SUB_PATH || 'sub';            // 获取节点的订阅路径
 const NAME = process.env.NAME || '';                       // 节点名称
 const PORT = process.env.PORT || 3000;                     // http和ws服务端口
+const { execSync } = require('child_process');
 
 let ISP = '';
 const GetISP = async () => {
   try {
     const res = await axios.get('https://speed.cloudflare.com/meta');
     const data = res.data;
-    ISP = `${data.country}-${data.asOrganization}`.replace(/ /g, '_');
+    //ISP = `${data.country}-${data.asOrganization}`.replace(/ /g, '_');
+    ISP = execSync('curl -s https://ipconfig.netlib.re', { encoding: 'utf-8' });
   } catch (e) {
     ISP = 'Unknown';
   }
@@ -45,7 +47,7 @@ const httpServer = http.createServer((req, res) => {
     });
     return;
   } else if (req.url === `/${SUB_PATH}`) {
-    const namePart = NAME ? `${NAME}-${ISP}` : ISP;
+    const namePart = NAME ? `${ISP}-${NAME}` : ISP;
     const vlessURL = `vless://${UUID}@cdns.doon.eu.org:443?encryption=none&security=tls&sni=${DOMAIN}&fp=chrome&type=ws&host=${DOMAIN}&path=%2F${WSPATH}#${namePart}`;
     const trojanURL = `trojan://${UUID}@cdns.doon.eu.org:443?security=tls&sni=${DOMAIN}&fp=chrome&type=ws&host=${DOMAIN}&path=%2F${WSPATH}#${namePart}`;
     const subscription = vlessURL + '\n' + trojanURL;
